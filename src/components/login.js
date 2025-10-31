@@ -8,13 +8,34 @@ export function LoginForm() {
 		isRememberChecked = isCheck;
 	}
 	function handelChange(name, value) {
-    if(name==='password'){
-      userPassword=value
-    }
-      else if(name==='username'){
-      userName=value
-    }
+		if (name === "password") {
+			userPassword = value;
+		} else if (name === "username") {
+			userName = value;
+		}
 	}
+	function deleteCookie(name) {
+		document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+	}
+	function handleSubmit() {
+		const userData = JSON.stringify({ userName });
+		const expirationTime = new Date();
+		expirationTime.setTime(expirationTime.getTime() + 5 * 60 * 1000);
+		if (!!userName && !!userPassword) {
+			if (isRememberChecked) {
+				localStorage.setItem("userName", userData);
+			} else {
+				sessionStorage.setItem("userName", userName);
+			}
+			// document.cookie = `userData=${userData};expires=${expirationTime.toUTCString()};path=/`;
+			deleteCookie("userData");
+		}
+	}
+	function getFromLocalStorage() {
+		const localStorageData = JSON.parse(localStorage.getItem("userName"));
+		return localStorageData;
+	}
+	console.log(getFromLocalStorage());
 
 	return El({
 		element: "div",
@@ -83,12 +104,7 @@ export function LoginForm() {
 				eventListener: [
 					{
 						event: "click",
-						callback: () => {
-							console.log(isRememberChecked);
-             
-              
-              
-						},
+						callback: handleSubmit,
 					},
 				],
 			}),
